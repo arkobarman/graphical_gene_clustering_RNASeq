@@ -1,0 +1,10 @@
+pandas
+numpy
+scipy
+anndata
+networkx
+matplotlib
+node2vec
+scikit-learn
+umap-learn
+git+https://github.com/ChangSuBiostats/CS-CORE_python.git
