@@ -9,7 +9,7 @@ from node2vec import Node2Vec
 import numpy as np
 from sklearn.cluster import SpectralClustering
 from umap import UMAP
-import os
+from scipy.stats import f
 
 def compute_top_genes(data, num_genes, gene_info):
     mean_exp = (data.values).sum(axis=0) / len(data)
@@ -258,3 +258,46 @@ def plot_dendrogram_with_embeddings(embeddings, gene_names_list, dimensions, p, 
     plt.show()
 
     return labels
+
+def f_test_gene_variances(matrix1, matrix2):
+    """
+    Perform an F-test to identify genes with significant variance differences
+    between two gene expression matrices.
+
+    Parameters:
+    - matrix1: pd.DataFrame
+        First gene expression matrix (samples × genes).
+    - matrix2: pd.DataFrame
+        Second gene expression matrix (samples × genes).
+
+    Returns:
+    - results: pd.DataFrame
+        A DataFrame with columns ['gene', 'f_statistic', 'p_value'].
+    """
+    # Ensure the matrices have the same genes
+    common_genes = matrix1.columns.intersection(matrix2.columns)
+    matrix1 = matrix1[common_genes]
+    matrix2 = matrix2[common_genes]
+
+    # Calculate variances for each gene
+    var1 = matrix1.var(axis=0, ddof=1)
+    var2 = matrix2.var(axis=0, ddof=1)
+
+    # Calculate F-statistic and degrees of freedom
+    f_statistic = var1 / var2
+    df1 = matrix1.shape[0] - 1
+    df2 = matrix2.shape[0] - 1
+
+    # Calculate p-values
+    p_values = 2 * np.minimum(
+        f.cdf(f_statistic, df1, df2), 1 - f.cdf(f_statistic, df1, df2)
+    )
+
+    # Combine results into a DataFrame
+    results = pd.DataFrame({
+        'gene': common_genes,
+        'f_statistic': f_statistic,
+        'p_value': p_values
+    })
+
+    return results
