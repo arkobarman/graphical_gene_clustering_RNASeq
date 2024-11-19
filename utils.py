@@ -266,9 +266,9 @@ def f_test_gene_variances(matrix1, matrix2):
 
     Parameters:
     - matrix1: pd.DataFrame
-        First gene expression matrix (samples × genes).
+        First gene expression matrix (samples * genes).
     - matrix2: pd.DataFrame
-        Second gene expression matrix (samples × genes).
+        Second gene expression matrix (samples * genes).
 
     Returns:
     - results: pd.DataFrame
