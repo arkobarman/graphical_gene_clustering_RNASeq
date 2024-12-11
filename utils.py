@@ -10,6 +10,9 @@ import numpy as np
 from sklearn.cluster import SpectralClustering
 from umap import UMAP
 from scipy.stats import f
+from sklearn.cluster import DBSCAN
+from scipy.spatial.distance import squareform
+import seaborn as sns
 
 def compute_top_genes(data, num_genes, gene_info):
     mean_exp = (data.values).sum(axis=0) / len(data)
@@ -301,3 +304,47 @@ def f_test_gene_variances(matrix1, matrix2):
     })
 
     return results
+
+
+def cluster_correlation_matrix(correlation_matrix, gene_names, eps=0.5, min_samples=2, visualize=True):
+    """
+    Perform DBSCAN clustering on a correlation matrix.
+    
+    Parameters:
+        correlation_matrix (numpy.ndarray): The input correlation matrix (symmetric, diagonal = 1).
+        eps (float): The DBSCAN `eps` parameter, specifying the neighborhood radius.
+        min_samples (int): The DBSCAN `min_samples` parameter, specifying the minimum number of points to form a cluster.
+        visualize (bool): Whether to visualize the clustered correlation matrix.
+    
+    Returns:
+        labels (numpy.ndarray): Cluster labels for each variable in the correlation matrix.
+    """
+    # Ensure the correlation matrix is symmetric and square
+    if correlation_matrix.shape[0] != correlation_matrix.shape[1]:
+        raise ValueError("Correlation matrix must be square.")
+    
+    # Convert correlation matrix to distance matrix
+    distance_matrix = 1 - correlation_matrix
+    
+    # Apply DBSCAN with precomputed distance matrix
+    dbscan = DBSCAN(eps=eps, min_samples=min_samples, metric='precomputed')
+    labels = dbscan.fit_predict(distance_matrix)
+    
+    # Visualize the clustered correlation matrix
+    if visualize:
+        g = sns.clustermap(
+            correlation_matrix, method="ward", cmap="coolwarm", figsize=(12, 12), xticklabels=True, yticklabels=True
+        )
+
+        # Rotate x-axis labels and adjust label sizes
+        plt.setp(g.ax_heatmap.get_xticklabels(), rotation=90, fontsize=8)
+        plt.setp(g.ax_heatmap.get_yticklabels(), rotation=0, fontsize=8)
+
+        # Set gene names as labels
+        g.ax_heatmap.set_xticklabels(gene_names)
+        g.ax_heatmap.set_yticklabels(gene_names)
+
+        # Show the plot
+        plt.show()
+    
+    return labels
