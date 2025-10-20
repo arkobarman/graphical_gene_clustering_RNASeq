@@ -1,0 +1,11 @@
+{
+    "edge_threshold": 0.4,
+    "p": 0.3539001771861178,
+    "q": 11.664747498246541,
+    "walk_length": 20,
+    "P": 7,
+    "S": 11,
+    "embedding_dim": 10,
+    "window": 10,
+    "negative": 7
+}
