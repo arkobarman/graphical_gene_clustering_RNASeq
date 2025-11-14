@@ -1,6 +1,6 @@
 # AMD Graphical Models
 
-Welcome to the AMD Graphical Models workspace.
+Please see our paper: ["A Graphical Method for Identifying Gene Clusters from RNA Sequencing Data"](https://arxiv.org/abs/2511.09590) for details.
 
 ## Table of Contents
 
